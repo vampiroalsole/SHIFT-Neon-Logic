@@ -35,6 +35,8 @@ public class MainActivity extends Activity {
   web.loadUrl("file:///android_asset/index.html");
  }
  public class Bridge {
+  @JavascriptInterface public void closeApp() { runOnUiThread(() -> { finish(); }); }
+
   @JavascriptInterface public void exportBackup(String json) {
    if(json==null || json.length()>300000)return;
    runOnUiThread(()->{pendingExport=json;Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");i.putExtra(Intent.EXTRA_TITLE,"shift-salvataggio.json");startActivityForResult(i,SAVE);});
