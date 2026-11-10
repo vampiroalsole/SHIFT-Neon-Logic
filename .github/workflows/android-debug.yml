@@ -29,6 +29,28 @@ jobs:
         with:
           path: ~/.android/debug.keystore
           key: shift-debug-signing-v1
+      - name: Validate game JavaScript and required UI
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Audit(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.ids=set()
+              def handle_starttag(self, tag, attrs):
+                  for key,value in attrs:
+                      if key=='id':
+                          assert value not in self.ids, f'Duplicate id: {value}'
+                          self.ids.add(value)
+          src=Path('app/src/main/assets/index.html').read_text()
+          audit=Audit();audit.feed(src)
+          required={'board','helpModal','featureModal','exitModal','exitTop','achieveModal','dailyClaim','skipIntro'}
+          assert required<=audit.ids, f'Missing UI: {required-audit.ids}'
+          js=src.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/shift-game.js').write_text(js)
+          print('HTML IDs and game controls OK')
+          PY
+          node --check /tmp/shift-game.js
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
