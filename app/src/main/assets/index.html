@@ -129,10 +129,12 @@ $('restore').onclick=()=>{if(window.ShiftAndroid&&typeof window.ShiftAndroid.imp
  function tutorialPause(){if(started!==null){elapsed=Math.floor((performance.now()-started)/1000);started=null}paused=true;$('pause').textContent='▶ Riprendi'}
 function showHelp(){tutorialPause();$('helpModal').classList.add('show')}
 function featureInfo(n){return n===10?{glyph:'▣',title:'Blocchi mobili',detail:'Da questo livello puoi spingere i blocchi arancioni. La sfera scivola fino all’ostacolo: usa i blocchi per creare nuovi punti di arresto e aprire il percorso verso l’anello dorato.'}:n===21?{glyph:'◎',title:'Portali viola',detail:'I due portali viola sono collegati. Attraversane uno per comparire nell’altro: studia il punto di arrivo e combina i teletrasporti con i blocchi mobili.'}:n===41?{glyph:'⏣',title:'Interruttori e porte',detail:'Attraversa la piastra verde per cambiare lo stato della porta rossa. Ogni passaggio sull’interruttore la apre o la chiude: pianifica il percorso prima di muoverti.'}:null}
-function maybeShowTutorial(){if(!localStorage.getItem('shift-intro-seen')&&!localStorage.getItem('shift-skip-intro')){showHelp();return}maybeShowFeature()}
+let introShownThisSession=false;
+function maybeShowTutorial(){if(!introShownThisSession&&!localStorage.getItem('shift-skip-intro')){introShownThisSession=true;showHelp();return}maybeShowFeature()}
 function maybeShowFeature(){const f=featureInfo(levelNo);if(!f||localStorage.getItem('shift-feature-'+levelNo))return;tutorialPause();$('featureGlyph').textContent=f.glyph;$('featureTitle').textContent=f.title;$('featureDetail').textContent=f.detail;$('featureModal').classList.add('show')}
-function closeHelp(){const initial=!localStorage.getItem('shift-intro-seen');localStorage.setItem('shift-intro-seen','1');if($('skipIntro').checked)localStorage.setItem('shift-skip-intro','1');$('helpModal').classList.remove('show');if(initial)maybeShowFeature()}
-function closeFeature(){localStorage.setItem('shift-feature-'+levelNo,'1');$('featureModal').classList.remove('show')}
+function resumeTutorial(){if(!$('helpModal').classList.contains('show')&&!$('featureModal').classList.contains('show')&&!$('exitModal').classList.contains('show')){paused=false;$('pause').textContent='Ⅱ Pausa';if(moves>0&&!done)started=performance.now()-elapsed*1000}}
+function closeHelp(){if($('skipIntro').checked)localStorage.setItem('shift-skip-intro','1');$('helpModal').classList.remove('show');if(featureInfo(levelNo)&&!localStorage.getItem('shift-feature-'+levelNo))maybeShowFeature();else resumeTutorial()}
+function closeFeature(){localStorage.setItem('shift-feature-'+levelNo,'1');$('featureModal').classList.remove('show');resumeTutorial()}
 
 $('help').onclick=showHelp;
 $('closeHelp').onclick=closeHelp;
