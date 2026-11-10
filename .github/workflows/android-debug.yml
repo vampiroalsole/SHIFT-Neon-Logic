@@ -25,17 +25,12 @@ jobs:
       # Keep the same debug signing certificate across builds so Android can update
       # previously installed builds signed by this workflow (cache may expire).
       - name: Restore Android debug signing key
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: ~/.android/debug.keystore
           key: shift-debug-signing-v1
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
-      - name: Cache Android debug signing key
-        uses: actions/cache/save@v4
-        with:
-          path: ~/.android/debug.keystore
-          key: shift-debug-signing-v1
       - uses: actions/upload-artifact@v4
         with:
           name: SHIFT-Neon-Logic-debug-APK
