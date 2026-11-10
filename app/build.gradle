@@ -1,5 +1,5 @@
 plugins { id 'com.android.application' }
 android { namespace 'com.shift.neonlogic'; compileSdk 35
- defaultConfig { applicationId 'com.shift.neonlogic'; minSdk 24; targetSdk 35; versionCode 23; versionName '2.3' }
+ defaultConfig { applicationId 'com.shift.neonlogic'; minSdk 24; targetSdk 35; versionCode 24; versionName '2.4' }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
